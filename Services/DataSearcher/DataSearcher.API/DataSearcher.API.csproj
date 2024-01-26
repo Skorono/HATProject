@@ -6,10 +6,14 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>true</InvariantGlobalization>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <UserSecretsId>70cd03e3-114d-4654-8436-7d24f89419d7</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="MassTransit" Version="8.2.0-develop.1655" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.0-develop.1655" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
 
@@ -17,6 +21,10 @@
       <Content Include="..\..\..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DataSearcher.Data\DataSearcher.Data.csproj" />
     </ItemGroup>
 
 </Project>

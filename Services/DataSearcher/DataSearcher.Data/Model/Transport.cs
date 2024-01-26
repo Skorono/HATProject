@@ -1,6 +1,8 @@
+using DataSearcher.Data.Interfaces;
+
 namespace DataSearcher.Data.Model;
 
-public class Transport
+public class Transport: ITransport
 {
     
 }
