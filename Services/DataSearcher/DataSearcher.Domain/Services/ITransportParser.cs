@@ -4,7 +4,7 @@ namespace DataSearcher.Domain.Services;
 
 public interface ITransportParser
 {
-    public RouteStops GetRouteStops(string routeId);
-
-    public Schedule GetRouteStopShedule(Route route, Stop busStop);
+    public string GetRouteStops(string routeId);
+    public string GetRouteStopShedule(string routeId, string stopName);
+    public IEnumerable<string> GetRoutes();
 }

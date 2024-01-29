@@ -1,4 +1,5 @@
 using DataSearcher.Data.Context;
+using DataSearcher.Domain.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,11 @@ builder.Services.AddDbContext<TransportRouteContext>(
     );
 
 var app = builder.Build();
+
+foreach (var route in new TransportService().GetRoutes())
+{
+    Console.WriteLine(route);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -11,10 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Helpers\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\DataSearcher.Data\DataSearcher.Data.csproj" />
     </ItemGroup>
 
