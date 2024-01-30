@@ -21,9 +21,14 @@ internal class WebScraper: IDataProvider
 
     private HtmlDocument? _getRoutePage(int page = 1)
     {
-        string responseUrl = $"ru/ajax/App/ScheduleController/getRoutesList?" +
-                             $"mgt_schedule%5Bsearch%5D=&mgt_schedule%5BisNight%5D=&mgt_schedule" +
-                             $"%5BworkTime%5D=1&mgt_schedule%5Bdirection%5D=0&page={page}";
+        string responseUrl =
+            $"/ru/ajax/App/ScheduleController/getRoutesList?" +
+            $"mgt_schedule%5Bsearch%5D=&" +
+            $"mgt_schedule%5BisNight%5D=&" +
+            $"mgt_schedule%5BworkTime%5D=1&" +
+            $"mgt_schedule%5Bdirection%5D=0&" +
+            $"page={page}";
+        
         return _getHtmlDoc(responseUrl);
     }
     
