@@ -2,15 +2,20 @@ using System.Text.Json.Nodes;
 
 namespace DataSearcher.Domain.Helpers;
 
-public sealed class ResponseTable
+internal sealed class ResponseTable
 {
-    private JsonObject _table = new();    
-    
-    public JsonObject Table { get; set; }
+    private JsonArray _table = new();
+
+    public int HeadersCount => _table.Count;
     
     /*
-     not implemented yet
-     dumps table to one of format like xml or xlsx
-     */
-    public void Dump() => throw new NotImplementedException();
+    public JsonNode? FindNode(string nodeName, int depth = 10)
+    {
+        
+    }
+    */
+
+    public void AddNode(Dictionary<string, JsonNode> node) => _table[node.Keys.First()] = node.Values.First();
+    
+    
 }
