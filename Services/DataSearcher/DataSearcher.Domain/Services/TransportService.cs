@@ -23,10 +23,10 @@ public class TransportService: ITransportParser
     public IEnumerable<string> GetRoutes()
     {
         // i know, it`s not right :)
-        var routesVal = JsonSerializer.Deserialize<List<string>>( _dataProvider.GetRoutes()["routes"]!.GetValue<string>());
+        var routesVal = JsonSerializer.Deserialize<List<List<string>>>( _dataProvider.GetRoutes()["routes"]!.GetValue<string>());
         foreach  (var node in routesVal)
         {
-            yield return node;
+            foreach (var name in node) yield return name;
         }
     }
 }

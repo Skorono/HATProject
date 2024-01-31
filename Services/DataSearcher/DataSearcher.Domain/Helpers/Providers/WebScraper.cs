@@ -11,51 +11,66 @@ internal class WebScraper: IDataProvider
 {
     public static readonly string BaseUrl = "https://transport.mos.ru/";
 
+    // don`t forget to delete :D
+    public static readonly string UserAgent =
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36";
+    
     private ResponseTable _table = new();
-    private HttpClient _client = new() { BaseAddress = new Uri(BaseUrl) };
     
-    public WebScraper()
+    public HtmlDocument? GetRoutePage(int page = 1)
     {
-        _client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36");
-    }
-
-    private HtmlDocument? _getRoutePage(int page = 1)
-    {
-        string responseUrl =
-            $"/ru/ajax/App/ScheduleController/getRoutesList?" +
-            $"mgt_schedule%5Bsearch%5D=&" +
-            $"mgt_schedule%5BisNight%5D=&" +
-            $"mgt_schedule%5BworkTime%5D=1&" +
-            $"mgt_schedule%5Bdirection%5D=0&" +
-            $"page={page}";
+        string responseUrl = $"ru/ajax/App/ScheduleController/getRoutesList?" +
+                             $"mgt_schedule[search]=&" +
+                             $"mgt_schedule[isNight]=&" +
+                             $"mgt_schedule[workTime]=1&" +
+                             $"mgt_schedule[direction]=0&" +
+                             $"page={page}";
         
-        return _getHtmlDoc(responseUrl);
+        return _getHtmlDoc(responseUrl, new Dictionary<string, string>
+        {
+            {"User-Agent", UserAgent},
+            {"X-Requested-With", "XMLHttpRequest"}
+        });
     }
     
-    private HtmlDocument? _getHtmlDoc(string responseUri)
+    private HtmlDocument? _getHtmlDoc(string responseUri, Dictionary<string, string>? clientParams = null)
     {
         HtmlDocument doc = new();
-        var request = _client.GetAsync(responseUri).Result; 
-        doc.LoadHtml(request.Content.ReadAsStringAsync().Result);
+        using (var client = new HttpClient() { BaseAddress = new Uri(BaseUrl) })
+        {
+            foreach (var param in clientParams)
+                client.DefaultRequestHeaders.Add(param.Key, param.Value);
 
-        return request.StatusCode == HttpStatusCode.OK ? doc : null;
+            var request = client.GetAsync(responseUri).Result;
+            if (request.StatusCode == HttpStatusCode.OK)
+                doc.LoadHtml(request.Content.ReadAsStringAsync().Result);
+        }
+
+        return doc.ParsedText != null ? doc : null;
     }
 
     public JsonObject GetRoutes()
     {
         JsonObject json = new();
-        HtmlDocument? doc = _getRoutePage(2);
 
+        int page = 1;
+        HtmlDocument? routePage = new();
+        List<HtmlDocument> pageList = new();
+        while (routePage != null)
+        {
+            routePage = GetRoutePage(page);
+            if (routePage != null) pageList.Add(routePage);
+
+            page++;
+        }
+        
         json["routes"] = JsonSerializer.Serialize(
-            doc.DocumentNode?
+            pageList
+                .Select(page => page.DocumentNode?
                 .SelectNodes("//div[@class=\"ts-number\"]")
-                .Select(node => node.InnerText.Trim()),
-            
-            new JsonSerializerOptions()
-            {
-                Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
-                WriteIndented = true
-            });
+                .Select(node => node.InnerText.Trim())
+                )
+            );   
         
         return json;
     }
