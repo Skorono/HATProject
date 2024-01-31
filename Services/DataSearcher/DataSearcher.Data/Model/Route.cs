@@ -7,6 +7,13 @@ public partial class Route
 {
     [Column(TypeName = "VARCHAR")]
     [StringLength(4)]
-    public string Id { get; set; } = null!;
-    public virtual RouteType Type { get; set; } = null!;
+    public int Id;
+
+    public string Name { get; set; } = null!;
+
+    public int TransportTypeId;
+    public int RouteTypeId;
+    
+    public virtual TransportType TransportType { get; set; } = null!;
+    public virtual RouteType RouteType { get; set; } = null!;
 }

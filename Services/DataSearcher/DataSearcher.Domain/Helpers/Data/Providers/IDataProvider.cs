@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 
-namespace DataSearcher.Domain.Helpers.Providers;
+namespace DataSearcher.Domain.Helpers.Data.Providers;
 
 public interface IDataProvider
 {

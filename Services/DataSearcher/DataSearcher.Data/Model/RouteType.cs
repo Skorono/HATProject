@@ -2,6 +2,15 @@ namespace DataSearcher.Data.Model;
 
 public partial class RouteType
 {
-    public int Id { get; set; }
+    public Types Id { get; set; }
     public string Name { get; set; } = null!;
+    
+    public enum Types
+    {
+        Mainline = 1,
+        Local,
+        Social,
+        Diametrical,
+        Express
+    }
 }

@@ -3,9 +3,11 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Unicode;
+using DataSearcher.Data.Model;
+using DataSearcher.Domain.Helpers.Data.Parsers;
 using HtmlAgilityPack;
 
-namespace DataSearcher.Domain.Helpers.Providers;
+namespace DataSearcher.Domain.Helpers.Data.Providers;
 
 internal class WebScraper: IDataProvider
 {
@@ -15,9 +17,18 @@ internal class WebScraper: IDataProvider
     public static readonly string UserAgent =
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36";
     
+    private ITransportParser<HtmlDocument> _parser;
     private ResponseTable _table = new();
     
-    public HtmlDocument? GetRoutePage(int page = 1)
+    public WebScraper(ITransportParser<HtmlDocument>? parser = null)
+    {
+        if (parser != null)
+            _parser = parser;
+        else
+            _parser = new MosTransParser();
+    }
+    
+    public HtmlDocument? GetRoutePage(int page)
     {
         string responseUrl = $"ru/ajax/App/ScheduleController/getRoutesList?" +
                              $"mgt_schedule[search]=&" +
@@ -55,22 +66,14 @@ internal class WebScraper: IDataProvider
 
         int page = 1;
         HtmlDocument? routePage = new();
-        List<HtmlDocument> pageList = new();
+        List<List<Route>> routes = new();
         while (routePage != null)
         {
             routePage = GetRoutePage(page);
-            if (routePage != null) pageList.Add(routePage);
-
+            if (routePage != null) routes.Add(_parser.ParseRoutes(routePage)!);
+            
             page++;
         }
-        
-        json["routes"] = JsonSerializer.Serialize(
-            pageList
-                .Select(page => page.DocumentNode?
-                .SelectNodes("//div[@class=\"ts-number\"]")
-                .Select(node => node.InnerText.Trim())
-                )
-            );   
         
         return json;
     }

@@ -1,9 +1,10 @@
 using System.Text.Json;
-using DataSearcher.Domain.Helpers.Providers;
+using DataSearcher.Domain.Helpers.Data.Parsers;
+using DataSearcher.Domain.Helpers.Data.Providers;
 
 namespace DataSearcher.Domain.Services;
 
-public class TransportService: ITransportParser
+public class TransportService
 {
     private IDataProvider _dataProvider;
     public TransportService(IDataProvider provider = null)
@@ -23,10 +24,10 @@ public class TransportService: ITransportParser
     public IEnumerable<string> GetRoutes()
     {
         // i know, it`s not right :)
-        var routesVal = JsonSerializer.Deserialize<List<List<string>>>( _dataProvider.GetRoutes()["routes"]!.GetValue<string>());
+        var routesVal = _dataProvider.GetRoutes();
         foreach  (var node in routesVal)
         {
-            foreach (var name in node) yield return name;
+            yield return node.Key;
         }
     }
 }
