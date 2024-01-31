@@ -17,10 +17,10 @@ internal class WebScraper: IDataProvider
     public static readonly string UserAgent =
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36";
     
-    private ITransportParser<HtmlDocument> _parser;
+    private TransportParser<HtmlDocument> _parser;
     private ResponseTable _table = new();
     
-    public WebScraper(ITransportParser<HtmlDocument>? parser = null)
+    public WebScraper(TransportParser<HtmlDocument>? parser = null)
     {
         if (parser != null)
             _parser = parser;

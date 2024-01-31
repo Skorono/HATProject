@@ -11,6 +11,7 @@ public partial class RouteType
         Local,
         Social,
         Diametrical,
-        Express
+        Express,
+        Undefined
     }
 }
