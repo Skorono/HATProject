@@ -1,7 +1,10 @@
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
 using DataSearcher.Data.Context;
 using DataSearcher.Data.Model;
 using DataSearcher.Domain.Services;
 using Microsoft.EntityFrameworkCore;
+using Route = DataSearcher.Data.Model.Route;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,13 +19,14 @@ builder.Services.AddDbContext<TransportRouteContext>(
 var app = builder.Build();
 
 var service = new TransportService();
-List<Stop> stops = new();
+var routes = service.GetRoutes().WaitAsync(TimeSpan.FromMinutes(10)).Result;
+List<Task> tasks = new();
+List<Task<Stop>> stops = new();
 
-foreach (var route in service.GetRoutes())
-{
-    var data = service.GetRouteStops(route.Id);
-    data?.ForEach(stop => stops.Add(stop));
-}
+Console.WriteLine($"Маршруты: {routes.Count}");
+foreach (var route in routes)
+    service.GetRouteStops(route.Id).WaitAsync(TimeSpan.FromMinutes(10)).Result?.ForEach(stopList => Console.WriteLine(stopList?.Name));
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -33,3 +37,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.Run();
+
+public class Test
+{
+    [Benchmark]
+    public void GetSchedule()
+    {
+        
+    }
+}

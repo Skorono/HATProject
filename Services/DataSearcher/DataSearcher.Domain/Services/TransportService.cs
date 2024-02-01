@@ -13,12 +13,20 @@ public class TransportService
         _dataProvider = provider == null ? new WebScraper() : provider;
     }
 
-    public List<Stop>? GetRouteStops(int routeId) => _dataProvider.GetStops(routeId);
+    public async Task<List<Stop>?> GetRouteStops(int routeId) => await new TaskFactory().StartNew(delegate
+        {
+            return _dataProvider.GetStops(routeId);
+        }
+    );
 
     public string GetRouteStopShedule(string routeId, string stopName)
     {
         throw new NotImplementedException();
     }
 
-    public List<Route>? GetRoutes() => _dataProvider.GetRoutes();
+    public async Task<List<Route>?> GetRoutes() => await new TaskFactory().StartNew( delegate
+        {
+            return _dataProvider.GetRoutes()!;
+        }
+    );
 }

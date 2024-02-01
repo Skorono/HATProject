@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -41,10 +42,10 @@ internal class WebScraper: IDataProvider
         {
             {"User-Agent", UserAgent},
             {"X-Requested-With", "XMLHttpRequest"}
-        });
+        })!.Result;
     }
     
-    private HtmlDocument? _getHtmlDoc(string responseUri, Dictionary<string, string>? clientParams = null)
+    private async Task<HtmlDocument?> _getHtmlDoc(string responseUri, Dictionary<string, string>? clientParams = null)
     {
         HtmlDocument doc = new();
         using (var client = new HttpClient() { BaseAddress = new Uri(BaseUrl) })
@@ -53,11 +54,22 @@ internal class WebScraper: IDataProvider
                 foreach (var param in clientParams)
                     client.DefaultRequestHeaders.Add(param.Key, param.Value);
 
-            var request = client.GetAsync(responseUri).Result;
-            if (request.StatusCode == HttpStatusCode.OK)
-                doc.LoadHtml(request.Content.ReadAsStringAsync().Result);
+            try
+            {
+                var request = await client.GetAsync(responseUri);
+                if (request.StatusCode == HttpStatusCode.OK)
+                    doc.LoadHtml(request.Content.ReadAsStringAsync().Result);
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine(e);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
-
+        
         return doc.ParsedText != null ? doc : null;
     }
 
@@ -80,9 +92,21 @@ internal class WebScraper: IDataProvider
             => collection.Union(collection1).ToList());
     }
 
-    public List<Stop>? GetStops(int routeId)
+    public List<Stop>? GetStops(int routeId, DateOnly? date = null)
     {
-        HtmlDocument? schedulePage = _getHtmlDoc($"/transport/schedule/route/{routeId}");
+        date = date ?? DateOnly.Parse(DateTime.Today.ToShortDateString());
+        
+        HtmlDocument? schedulePage = _getHtmlDoc("ru/ajax/App/ScheduleController/getRoute?" +
+                                                 "mgt_schedule[BisNight]=&" +
+                                                 $"mgt_schedule[date]={date}&" +
+                                                 $"mgt_schedule[route]={routeId}&" +
+                                                 "mgt_schedule[direction]=0",
+            new Dictionary<string, string>()
+            {
+                { "User-Agent", UserAgent },
+                {"X-Requested-With", "XMLHttpRequest"}
+            }).Result;
+        
         if (schedulePage != null)
             return _parser.ParseRouteStops(schedulePage);
         return null;
