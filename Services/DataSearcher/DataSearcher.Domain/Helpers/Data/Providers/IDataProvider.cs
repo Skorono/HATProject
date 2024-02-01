@@ -1,12 +1,13 @@
 using System.Text.Json.Nodes;
+using DataSearcher.Data.Model;
 
 namespace DataSearcher.Domain.Helpers.Data.Providers;
 
 public interface IDataProvider
 {
-    public JsonObject GetRoutes();
+    public List<Route>? GetRoutes();
     
-    public JsonObject GetStops(string routeId);
+    public List<Stop>? GetStops(int routeId);
     
-    public JsonObject GetSchedule(string routeId, string stopName, DateOnly? date = null);
+    public Schedule? GetSchedule(string routeId, string stopName, DateOnly? date = null);
 }

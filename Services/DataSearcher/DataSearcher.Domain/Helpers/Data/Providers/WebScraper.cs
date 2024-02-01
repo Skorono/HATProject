@@ -49,8 +49,9 @@ internal class WebScraper: IDataProvider
         HtmlDocument doc = new();
         using (var client = new HttpClient() { BaseAddress = new Uri(BaseUrl) })
         {
-            foreach (var param in clientParams)
-                client.DefaultRequestHeaders.Add(param.Key, param.Value);
+            if (clientParams != null)
+                foreach (var param in clientParams)
+                    client.DefaultRequestHeaders.Add(param.Key, param.Value);
 
             var request = client.GetAsync(responseUri).Result;
             if (request.StatusCode == HttpStatusCode.OK)
@@ -60,7 +61,7 @@ internal class WebScraper: IDataProvider
         return doc.ParsedText != null ? doc : null;
     }
 
-    public JsonObject GetRoutes()
+    public List<Route>? GetRoutes()
     {
         JsonObject json = new();
 
@@ -75,15 +76,19 @@ internal class WebScraper: IDataProvider
             page++;
         }
         
-        return json;
+        return routes.Aggregate((collection, collection1) 
+            => collection.Union(collection1).ToList());
     }
 
-    public JsonObject GetStops(string routeId)
+    public List<Stop>? GetStops(int routeId)
     {
-        throw new NotImplementedException();
+        HtmlDocument? schedulePage = _getHtmlDoc($"/transport/schedule/route/{routeId}");
+        if (schedulePage != null)
+            return _parser.ParseRouteStops(schedulePage);
+        return null;
     }
 
-    public JsonObject GetSchedule(string routeId, string stopName, DateOnly? date = null)
+    public Schedule? GetSchedule(string routeId, string stopName, DateOnly? date = null)
     {
         throw new NotImplementedException();
     }

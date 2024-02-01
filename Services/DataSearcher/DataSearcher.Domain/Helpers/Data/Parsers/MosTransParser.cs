@@ -30,7 +30,14 @@ public class MosTransParser: TransportParser<HtmlDocument>
 
     public override List<Stop>? ParseRouteStops(HtmlDocument data)
     {
-        throw new NotImplementedException();
+        return data.DocumentNode?
+            .SelectNodes("//div[@class=\"a_dotted d-inline\"]")?
+            .Select( node =>
+                new Stop()
+                {
+                    Name = node.InnerText
+                }
+            ).ToList();
     }
 
     public override List<Schedule>? ParseRouteSchedule(HtmlDocument data)

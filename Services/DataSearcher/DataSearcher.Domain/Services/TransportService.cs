@@ -1,4 +1,5 @@
 using System.Text.Json;
+using DataSearcher.Data.Model;
 using DataSearcher.Domain.Helpers.Data.Parsers;
 using DataSearcher.Domain.Helpers.Data.Providers;
 
@@ -11,23 +12,13 @@ public class TransportService
     {
         _dataProvider = provider == null ? new WebScraper() : provider;
     }
-    public string GetRouteStops(string routeId)
-    {
-        throw new NotImplementedException();
-    }
+
+    public List<Stop>? GetRouteStops(int routeId) => _dataProvider.GetStops(routeId);
 
     public string GetRouteStopShedule(string routeId, string stopName)
     {
         throw new NotImplementedException();
     }
 
-    public IEnumerable<string> GetRoutes()
-    {
-        // i know, it`s not right :)
-        var routesVal = _dataProvider.GetRoutes();
-        foreach  (var node in routesVal)
-        {
-            yield return node.Key;
-        }
-    }
+    public List<Route>? GetRoutes() => _dataProvider.GetRoutes();
 }
