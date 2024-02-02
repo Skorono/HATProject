@@ -8,25 +8,17 @@ namespace DataSearcher.Domain.Services;
 public class TransportService
 {
     private IDataProvider _dataProvider;
-    public TransportService(IDataProvider provider = null)
+    public TransportService(IDataProvider? provider = null)
     {
-        _dataProvider = provider == null ? new WebScraper() : provider;
+        _dataProvider = provider ?? new WebScraper();
     }
 
-    public async Task<List<Stop>?> GetRouteStops(int routeId) => await new TaskFactory().StartNew(delegate
-        {
-            return _dataProvider.GetStops(routeId);
-        }
-    );
+    public async Task<List<Stop>?> GetRouteStopsAsync(int routeId) => await new TaskFactory().StartNew(() => _dataProvider.GetStops(routeId));
 
     public string GetRouteStopShedule(string routeId, string stopName)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<List<Route>?> GetRoutes() => await new TaskFactory().StartNew( delegate
-        {
-            return _dataProvider.GetRoutes()!;
-        }
-    );
+    public async Task<List<Route>?> GetRoutesAsync() => await new TaskFactory().StartNew(() => _dataProvider.GetRoutes()!);
 }

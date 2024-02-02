@@ -17,7 +17,8 @@ internal class WebScraper: IDataProvider
     // don`t forget to delete :D
     public static readonly string UserAgent =
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36";
-    
+
+    private HttpClient _client = new() { BaseAddress = new Uri(BaseUrl) }; 
     private TransportParser<HtmlDocument> _parser;
     private ResponseTable _table = new();
     
@@ -27,6 +28,7 @@ internal class WebScraper: IDataProvider
             _parser = parser;
         else
             _parser = new MosTransParser();
+        _client.Timeout = TimeSpan.FromMinutes(30);
     }
     
     public HtmlDocument? GetRoutePage(int page)
@@ -42,34 +44,32 @@ internal class WebScraper: IDataProvider
         {
             {"User-Agent", UserAgent},
             {"X-Requested-With", "XMLHttpRequest"}
-        })!.Result;
+        });
     }
     
-    private async Task<HtmlDocument?> _getHtmlDoc(string responseUri, Dictionary<string, string>? clientParams = null)
+    private HtmlDocument? _getHtmlDoc(string responseUri, Dictionary<string, string>? clientParams = null)
     {
         HtmlDocument doc = new();
-        using (var client = new HttpClient() { BaseAddress = new Uri(BaseUrl) })
-        {
-            if (clientParams != null)
-                foreach (var param in clientParams)
-                    client.DefaultRequestHeaders.Add(param.Key, param.Value);
 
-            try
-            {
-                var request = await client.GetAsync(responseUri);
-                if (request.StatusCode == HttpStatusCode.OK)
-                    doc.LoadHtml(request.Content.ReadAsStringAsync().Result);
-            }
-            catch (HttpRequestException e)
-            {
-                Console.WriteLine(e);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+        _client.DefaultRequestHeaders.Clear();
+        if (clientParams != null)
+            foreach (var param in clientParams)
+                _client.DefaultRequestHeaders.Add(param.Key, param.Value);
+
+        try
+        {
+            SemaphoreSlim semaphore = new(50);
+            HttpResponseMessage? request = _client.GetAsync(responseUri).Result;
+            semaphore.Release();
+            
+            if (request?.StatusCode == HttpStatusCode.OK)
+                doc.LoadHtml(request?.Content.ReadAsStringAsync().Result);
         }
-        
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine(e);
+        }
+
         return doc.ParsedText != null ? doc : null;
     }
 
@@ -105,7 +105,7 @@ internal class WebScraper: IDataProvider
             {
                 { "User-Agent", UserAgent },
                 {"X-Requested-With", "XMLHttpRequest"}
-            }).Result;
+            });
         
         if (schedulePage != null)
             return _parser.ParseRouteStops(schedulePage);
