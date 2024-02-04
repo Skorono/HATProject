@@ -9,7 +9,7 @@ public abstract class TransportParser<T>
 
     public abstract List<Stop>? ParseRouteStops(T data);
 
-    public abstract List<Schedule>? ParseRouteSchedule(T data);
+    public abstract Dictionary<string, Schedule>? ParseRouteSchedule(T data);
 
     protected RouteType.Types _getRouteType([StringLength(4)] string routeName)
     {

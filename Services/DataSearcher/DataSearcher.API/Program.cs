@@ -1,10 +1,5 @@
-using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
 using DataSearcher.Data.Context;
-using DataSearcher.Data.Model;
-using DataSearcher.Domain.Services;
 using Microsoft.EntityFrameworkCore;
-using Route = DataSearcher.Data.Model.Route;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<TransportRouteContext>(
     option => option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
-    );
+);
 
 var app = builder.Build();
 

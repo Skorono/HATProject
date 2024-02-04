@@ -10,23 +10,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
-        <PackageReference Include="MassTransit" Version="8.2.0-develop.1655" />
-        <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.0-develop.1655" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.12"/>
+        <PackageReference Include="MassTransit" Version="8.2.0-develop.1655"/>
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.0-develop.1655"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\..\..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\..\..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DataSearcher.Data\DataSearcher.Data.csproj" />
-      <ProjectReference Include="..\DataSearcher.Domain\DataSearcher.Domain.csproj" />
+        <ProjectReference Include="..\DataSearcher.Data\DataSearcher.Data.csproj"/>
+        <ProjectReference Include="..\DataSearcher.Domain\DataSearcher.Domain.csproj"/>
     </ItemGroup>
 
 </Project>

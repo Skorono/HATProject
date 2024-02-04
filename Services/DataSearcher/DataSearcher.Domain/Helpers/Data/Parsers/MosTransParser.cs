@@ -3,7 +3,7 @@ using HtmlAgilityPack;
 
 namespace DataSearcher.Domain.Helpers.Data.Parsers;
 
-public class MosTransParser: TransportParser<HtmlDocument>
+public class MosTransParser : TransportParser<HtmlDocument>
 {
     public override List<Route>? ParseRoutes(HtmlDocument data)
     {
@@ -12,11 +12,12 @@ public class MosTransParser: TransportParser<HtmlDocument>
             .Select(
                 node => new Func<Route>(delegate
                 {
-                    string name = node.ChildNodes
+                    var name = node.ChildNodes
                         .First(node => node.Attributes.FirstOrDefault(attr => attr.Value == "ts-number") != null)
-                        .InnerText.Trim();
+                        .InnerText
+                        .Trim();
 
-                    return new Route()
+                    return new Route
                     {
                         Id = int.Parse(node.Attributes.AttributesWithName("href").First().Value.Split('/').Last()),
                         Name = name,
@@ -32,16 +33,28 @@ public class MosTransParser: TransportParser<HtmlDocument>
     {
         return data.DocumentNode?
             .SelectNodes("//div[@class=\"a_dotted d-inline\"]")?
-            .Select( node =>
-                new Stop()
+            .Select(node =>
+                new Stop
                 {
-                    Name = node.InnerText
+                    Name = node.InnerText.Replace("&quot;", "'")
                 }
             ).ToList();
     }
 
-    public override List<Schedule>? ParseRouteSchedule(HtmlDocument data)
+    public override Dictionary<string, Schedule>? ParseRouteSchedule(HtmlDocument data)
     {
         throw new NotImplementedException();
+        /*Dictionary<string, Schedule> schedules = new();
+        ParseRouteStops(data)?.Select(stop => schedules.Keys.Append(stop.Name));
+
+        return schedules.Keys.Count < 0 ? null
+            : data.DocumentNode?
+                .SelectNodes("//div[@class=\"raspisanie_hover\"]")
+                .Select(node =>
+                    node.ChildNodes
+                        .Select(el =>
+                            el.Attributes.AttributesWithName("class").First(attr => attr.Value == "raspisanie_data "))
+                        .Select(node => )
+                );*/
     }
 }

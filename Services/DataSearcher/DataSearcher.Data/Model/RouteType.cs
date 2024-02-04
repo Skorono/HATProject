@@ -1,10 +1,7 @@
 namespace DataSearcher.Data.Model;
 
-public partial class RouteType
+public class RouteType
 {
-    public Types Id { get; set; }
-    public string Name { get; set; } = null!;
-    
     public enum Types
     {
         Mainline = 1,
@@ -14,4 +11,7 @@ public partial class RouteType
         Express,
         Undefined
     }
+
+    public Types Id { get; set; }
+    public string Name { get; set; } = null!;
 }

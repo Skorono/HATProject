@@ -7,11 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="HtmlAgilityPack" Version="1.11.57" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.57"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DataSearcher.Data\DataSearcher.Data.csproj" />
+        <ProjectReference Include="..\DataSearcher.Data\DataSearcher.Data.csproj"/>
     </ItemGroup>
 
 </Project>
