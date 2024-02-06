@@ -41,20 +41,49 @@ public class MosTransParser : TransportParser<HtmlDocument>
             ).ToList();
     }
 
-    public override Dictionary<string, Schedule>? ParseRouteSchedule(HtmlDocument data)
+    public override Dictionary<string, List<Schedule?>> ParseRouteSchedule(HtmlDocument data)
     {
-        throw new NotImplementedException();
-        /*Dictionary<string, Schedule> schedules = new();
+        Dictionary<string, List<Schedule?>> schedules = new();
         ParseRouteStops(data)?.Select(stop => schedules.Keys.Append(stop.Name));
 
-        return schedules.Keys.Count < 0 ? null
+        int stopNumber = 0;
+        foreach (var node in data.DocumentNode?.SelectNodes("//div[@class=\"raspisanie_hover\"]")!)
+        {
+            foreach (var dateNode in node.ChildNodes
+                         .Select(el =>
+                             el.Attributes.AttributesWithName("class").First(attr => attr.Value == "raspisanie_data ").OwnerNode))
+            {
+                var schedule = schedules.ElementAt(stopNumber).Value;
+
+                var hour = dateNode.SelectSingleNode("//div[@class=\"dt1\"/strong").InnerText;
+
+                foreach (var minuteNode in dateNode.ChildNodes.Select(el =>
+                             el.Attributes.AttributesWithName("class").Where(attr => attr.Value == "div10")))
+                {
+                    foreach (var minuteAttr in minuteNode)
+                    {
+                        schedule.Add(new Schedule()
+                        {
+                            ArriveDateTime = DateTime.Parse($"{hour}:{minuteAttr.Value}")
+                        });    
+                    }
+                }
+                
+            }
+
+            stopNumber++;
+        }
+
+        return schedules;
+
+        /*return schedules.Keys.Count < 0 ? null
             : data.DocumentNode?
                 .SelectNodes("//div[@class=\"raspisanie_hover\"]")
                 .Select(node =>
                     node.ChildNodes
                         .Select(el =>
-                            el.Attributes.AttributesWithName("class").First(attr => attr.Value == "raspisanie_data "))
-                        .Select(node => )
+                            el.Attributes.AttributesWithName("class").First(attr => attr.Value == "raspisanie_data ").OwnerNode)
+                        .Select(node => node.SelectNodes("//div[@class=\"raspisanie_data2\"]/div").Select(dateNode => schedules))
                 );*/
     }
 }

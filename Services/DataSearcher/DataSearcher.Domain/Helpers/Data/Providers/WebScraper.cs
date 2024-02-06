@@ -59,7 +59,7 @@ internal class WebScraper : IDataProvider
         return schedulePage != null ? _parser.ParseRouteStops(schedulePage) : null;
     }
 
-    public Schedule? GetSchedule(string routeId, string stopName, DateOnly? date = null)
+    public Schedule? GetSchedule(string routeId, DateOnly? date = null)
     {
         throw new NotImplementedException();
     }

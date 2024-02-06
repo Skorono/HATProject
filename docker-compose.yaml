@@ -18,4 +18,6 @@ services:
       dockerfile: Services/Analyzer/Analyzer.API/Dockerfile
     depends_on:
       - datasearcher
+    ports: 
+      - "5432:5432"
     

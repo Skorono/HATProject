@@ -37,4 +37,9 @@ public class TransportController : ControllerBase
         return routes?.Select(route =>
             _service.GetRouteStopsAsync(route.Id, DateOnly.Parse(date.ToShortDateString())).Result).ToList();
     }
+
+    [HttpGet("testGetSchedule")]
+    public void GetSchedule()
+    {
+    }
 }
