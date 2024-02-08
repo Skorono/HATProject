@@ -39,7 +39,6 @@ public class TransportController : ControllerBase
     }
 
     [HttpGet("testGetSchedule")]
-    public void GetSchedule()
-    {
-    }
+    public Dictionary<string, List<Schedule?>>? GetSchedule(int routeId, DateTime date) =>
+        _service.GetRouteStopShedule(routeId, DateOnly.Parse(date.ToShortDateString()));
 }

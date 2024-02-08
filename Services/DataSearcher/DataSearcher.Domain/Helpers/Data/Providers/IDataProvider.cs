@@ -8,5 +8,5 @@ public interface IDataProvider
 
     public List<Stop>? GetStops(int routeId, DateOnly? date = null);
 
-    public Schedule? GetSchedule(string routeId, DateOnly? date = null);
+    public Dictionary<string, List<Schedule>?> GetSchedule(int routeId, DateOnly? date = null);
 }

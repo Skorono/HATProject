@@ -41,36 +41,33 @@ public class MosTransParser : TransportParser<HtmlDocument>
             ).ToList();
     }
 
-    public override Dictionary<string, List<Schedule?>> ParseRouteSchedule(HtmlDocument data)
+    public override Dictionary<string, List<Schedule>?> ParseRouteSchedule(HtmlDocument data)
     {
         Dictionary<string, List<Schedule?>> schedules = new();
-        ParseRouteStops(data)?.Select(stop => schedules.Keys.Append(stop.Name));
+        foreach (var enumerable in ParseRouteStops(data))
+        { 
+            schedules[enumerable.Name] = new();
+        } 
 
         int stopNumber = 0;
-        foreach (var node in data.DocumentNode?.SelectNodes("//div[@class=\"raspisanie_hover\"]")!)
+        foreach (var stopSchedule in data.DocumentNode?.SelectNodes("//div[@class=\"raspisanie_hover\"]"))
         {
-            foreach (var dateNode in node.ChildNodes
-                         .Select(el =>
-                             el.Attributes.AttributesWithName("class").First(attr => attr.Value == "raspisanie_data ").OwnerNode))
+            foreach (var node in stopSchedule.SelectNodes(".//div[@class=\"raspisanie_data \"]")!)
             {
                 var schedule = schedules.ElementAt(stopNumber).Value;
 
-                var hour = dateNode.SelectSingleNode("//div[@class=\"dt1\"/strong").InnerText;
+                var hour = node.SelectSingleNode(".//div[@class=\"dt1\"]").InnerText;
 
-                foreach (var minuteNode in dateNode.ChildNodes.Select(el =>
-                             el.Attributes.AttributesWithName("class").Where(attr => attr.Value == "div10")))
+                foreach (var minuteNode in node.SelectNodes(".//div[@class=\"div10\"]"))
                 {
-                    foreach (var minuteAttr in minuteNode)
-                    {
-                        schedule.Add(new Schedule()
-                        {
-                            ArriveDateTime = DateTime.Parse($"{hour}:{minuteAttr.Value}")
-                        });    
-                    }
-                }
-                
-            }
 
+                    schedule.Add(new Schedule()
+                    {
+                        ArriveDateTime = DateTime.Parse($"{hour.Trim()}{minuteNode.InnerText.Trim()}")
+                    });
+                }
+
+            }
             stopNumber++;
         }
 

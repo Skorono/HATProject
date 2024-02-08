@@ -59,10 +59,24 @@ internal class WebScraper : IDataProvider
         return schedulePage != null ? _parser.ParseRouteStops(schedulePage) : null;
     }
 
-    public Schedule? GetSchedule(string routeId, DateOnly? date = null)
+    public Dictionary<string, List<Schedule>?>? GetSchedule(int routeId, DateOnly? date = null)
     {
-        throw new NotImplementedException();
+        date = date ?? DateOnly.Parse(DateTime.Today.ToShortDateString());
+
+        var schedulePage = _getHtmlDoc("ru/ajax/App/ScheduleController/getRoute?" +
+                                       "mgt_schedule[BisNight]=&" +
+                                       $"mgt_schedule[date]={date}&" +
+                                       $"mgt_schedule[route]={routeId}&" +
+                                       "mgt_schedule[direction]=0",
+            new Dictionary<string, string>
+            {
+                { "User-Agent", UserAgent },
+                { "X-Requested-With", "XMLHttpRequest" }
+            });
+
+        return schedulePage != null ? _parser.ParseRouteSchedule(schedulePage) : null;
     }
+
 
     public HtmlDocument? GetRoutePage(int page)
     {

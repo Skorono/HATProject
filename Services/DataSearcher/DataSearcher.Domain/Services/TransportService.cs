@@ -17,10 +17,9 @@ public class TransportService
         return await new TaskFactory().StartNew(() => _dataProvider.GetStops(routeId, date));
     }
 
-    public string GetRouteStopShedule(string routeId, string stopName)
-    {
-        throw new NotImplementedException();
-    }
+    public Dictionary<string, List<Schedule>?> GetRouteStopShedule(int routeId, DateOnly date) =>
+        _dataProvider.GetSchedule(routeId, date);
+    
 
     public async Task<List<Route>?> GetRoutesAsync()
     {
