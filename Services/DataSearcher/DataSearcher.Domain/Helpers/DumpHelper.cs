@@ -1,3 +1,5 @@
+using DataSearcher.Domain.Helpers.Data;
+
 namespace DataSearcher.Domain.Helpers;
 
 /// <summary>

@@ -1,23 +1,20 @@
 services:
   datasearcher:
-    image:
-      postgres:latest
     build:
       context: .
       dockerfile: Services/DataSearcher/DataSearcher.API/Dockerfile
-    environment:
-      ConnectionStrings__DefaultConnection: "Host=db;Database=TransportRouteData;Username=postgres;Password=postgres"
     ports:
       - "8080:80"  
+    depends_on: 
+      - db
       
-  analyzer:
+  db:
     image:
       postgres:latest
-    build:
-      context: .
-      dockerfile: Services/Analyzer/Analyzer.API/Dockerfile
-    depends_on:
-      - datasearcher
-    ports: 
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "TransportData"
+    ports:
       - "5432:5432"
     

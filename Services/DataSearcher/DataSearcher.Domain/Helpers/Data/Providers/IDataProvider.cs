@@ -1,12 +1,15 @@
 using DataSearcher.Data.Model;
+using DataSearcher.Domain.Helpers.Data.Parsers;
 
 namespace DataSearcher.Domain.Helpers.Data.Providers;
 
-public interface IDataProvider
+public interface IDataProvider<TInput>
 {
-    public List<Route>? GetRoutes();
+    public List<Route>? GetRoutes(ITransportParser<List<Route>, TInput>? parser = null);
 
-    public List<Stop>? GetStops(int routeId, DateOnly? date = null);
+    public List<Stop>? GetStops(int routeId, DateOnly? date = null, 
+        ITransportParser<List<Stop>, TInput>? parser = null);
 
-    public Dictionary<string, List<Schedule>?> GetSchedule(int routeId, DateOnly? date = null);
+    public List<Schedule>? GetSchedule(int routeId, DateOnly? date = null,
+        ITransportParser<List<Schedule>, TInput>? parser = null);
 }

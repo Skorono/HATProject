@@ -1,6 +1,8 @@
+using DataSearcher.Data.Interfaces;
+
 namespace DataSearcher.Data.Model;
 
-public class RouteType
+public class RouteType: IModel
 {
     public enum Types
     {
@@ -12,6 +14,6 @@ public class RouteType
         Undefined
     }
 
-    public Types Id { get; set; }
+    public int Id { get; set; }
     public string Name { get; set; } = null!;
 }
