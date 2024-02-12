@@ -9,6 +9,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost";
+    options.InstanceName = "local";
+});
+
 builder.Services.AddDbContext<TransportRouteContext>(
     option => 
         option.UseNpgsql(builder.Configuration

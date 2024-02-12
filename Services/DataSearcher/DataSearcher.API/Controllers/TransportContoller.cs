@@ -4,6 +4,7 @@ using DataSearcher.Domain.Helpers.Data.Providers;
 using DataSearcher.Domain.Services;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Route = DataSearcher.Data.Model.Route;
 
 namespace DataSearcher.API.Controllers;
@@ -12,12 +13,14 @@ namespace DataSearcher.API.Controllers;
 [Route("api/[controller]")]
 public class TransportController : ControllerBase
 {
-    private TransportRouteContext _context;
+    private readonly TransportRouteContext _context;
+    private readonly IDistributedCache _cache;
     private readonly TransportService<HtmlDocument> _service = new(new WebScraper());
 
-    public TransportController(TransportRouteContext context)
+    public TransportController(TransportRouteContext context, IDistributedCache cache)
     {
         _context = context;
+        _cache = cache;
     }
 
     [HttpGet("getRouteById")]
