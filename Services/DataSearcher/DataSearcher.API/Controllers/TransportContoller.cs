@@ -1,5 +1,7 @@
-﻿using DataSearcher.Data.Context;
+﻿using DataSearcher.API.Managers;
+using DataSearcher.Data.Context;
 using DataSearcher.Data.Model;
+using DataSearcher.Domain.Helpers.Data;
 using DataSearcher.Domain.Helpers.Data.Providers;
 using DataSearcher.Domain.Services;
 using HtmlAgilityPack;
@@ -14,13 +16,13 @@ namespace DataSearcher.API.Controllers;
 public class TransportController : ControllerBase
 {
     private readonly TransportRouteContext _context;
-    private readonly IDistributedCache _cache;
+    private readonly CacheManager _cacheManager;
     private readonly TransportService<HtmlDocument> _service = new(new WebScraper());
 
-    public TransportController(TransportRouteContext context, IDistributedCache cache)
+    public TransportController(TransportRouteContext context, CacheManager cache)
     {
         _context = context;
-        _cache = cache;
+        _cacheManager = cache;
     }
 
     [HttpGet("getRouteById")]
@@ -33,14 +35,30 @@ public class TransportController : ControllerBase
     [HttpGet("getRoutesAsync")]
     public async Task<List<Route>?> GetRoutesAsync()
     {
-        var result = _context.Routes.ToList();
-        if (!result.Any())
+        var cachedResult = _cacheManager.GetResponsesByHeader<Route>("route");
+
+        if (cachedResult == null ||  !cachedResult.Any())
         {
-            result = await _service.GetRoutesAsync();
-            result.ForEach(route => _context.Routes.Add(route));
-            await _context.SaveChangesAsync();
+            var dbResult = _context.Routes.ToList();
+            dbResult.ForEach(r => _cacheManager.AddResponse(
+                new("route", r.Id),
+                new ResponseUnit<Route>
+                {
+                    Data = new List<Route>() { r },
+                    LifeTime = TimeSpan.FromMinutes(1),
+                }));
+            
+            if (!dbResult.Any())
+            {
+                dbResult = await _service.GetRoutesAsync();
+                dbResult?.ForEach(route => _context.Routes.Add(route));
+                await _context.SaveChangesAsync();
+            }
+
+            return dbResult;
         }
-        return result;
+        
+        return cachedResult.Select(r => r?.Data.First()).ToList();
     }
 
     [HttpGet("getRoutesByNameAsync")]

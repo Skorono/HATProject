@@ -7,6 +7,9 @@
         <InvariantGlobalization>true</InvariantGlobalization>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <UserSecretsId>70cd03e3-114d-4654-8436-7d24f89419d7</UserSecretsId>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>HATProject_listikAssigned.snk</AssemblyOriginatorKeyFile>
+        <PublicSign>true</PublicSign>
     </PropertyGroup>
 
     <ItemGroup>

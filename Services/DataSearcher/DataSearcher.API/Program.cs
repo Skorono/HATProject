@@ -1,3 +1,4 @@
+using DataSearcher.API.Managers;
 using DataSearcher.Data.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,8 @@ builder.Services.AddDbContext<TransportRouteContext>(
         option.UseNpgsql(builder.Configuration
             .GetConnectionString("DefaultConnection"))
 );
+
+builder.Services.AddSingleton<CacheManager>();
 
 var app = builder.Build();
 
