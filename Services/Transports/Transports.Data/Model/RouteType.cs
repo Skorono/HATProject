@@ -1,8 +1,6 @@
-using DataSearcher.Data.Interfaces;
+namespace Transports.Data.Model;
 
-namespace DataSearcher.Data.Model;
-
-public class RouteType: IModel
+public class RouteType
 {
     public enum Types
     {

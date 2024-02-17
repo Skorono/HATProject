@@ -1,5 +1,7 @@
-using DataSearcher.API.Managers;
 using DataSearcher.Data.Context;
+using DataSearcher.Domain.Helpers.Data.Providers;
+using DataSearcher.Domain.Services;
+using HtmlAgilityPack;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +25,7 @@ builder.Services.AddDbContext<TransportRouteContext>(
 );
 
 builder.Services.AddSingleton<CacheManager>();
+builder.Services.AddScoped<IDataProvider<HtmlDocument>, WebScraper>();
 
 var app = builder.Build();
 

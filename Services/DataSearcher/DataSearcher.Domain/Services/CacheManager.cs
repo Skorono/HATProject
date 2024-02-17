@@ -3,7 +3,7 @@ using DataSearcher.Domain.Helpers.Data;
 using Microsoft.Diagnostics.Tracing.Parsers.MicrosoftAntimalwareAMFilter;
 using Microsoft.Extensions.Caching.Distributed;
 
-namespace DataSearcher.API.Managers;
+namespace DataSearcher.Domain.Services;
 
 public sealed class CacheManager(IDistributedCache cache)
 {
@@ -24,7 +24,7 @@ public sealed class CacheManager(IDistributedCache cache)
     {
         if (!Keys.Contains(title))
             Keys.Add(title);
-        await cache.SetStringAsync(title.ToString(), JsonSerializer.Serialize<ResponseUnit<T>>(node, new JsonSerializerOptions() { IncludeFields = true,  }));
+        await cache.SetStringAsync(title.ToString(), JsonSerializer.Serialize<ResponseUnit<T>>(node));
     }
 
     public async Task<ResponseUnit<T>?> GetResponse<T>(CacheTitle title) where T : class
@@ -46,7 +46,7 @@ public sealed class CacheManager(IDistributedCache cache)
     public List<ResponseUnit<T>>? GetResponsesByHeader<T>(string header) where T: class
     {
         return Keys.Where(key => key.Header == header)?
-            .Select(async key => await GetResponse<T>(key))
+            .Select(async key => await GetResponse<T>(key))?
             .Select(t => t.Result!).ToList();
     }
 }

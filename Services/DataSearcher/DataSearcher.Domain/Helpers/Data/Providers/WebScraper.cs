@@ -62,7 +62,7 @@ public class WebScraper : IDataProvider<HtmlDocument>
         return doc.ParsedText != null ? doc : null;
     }
 
-    public List<Route>? GetRoutes(ITransportParser<List<Route>, HtmlDocument>? parser = null)
+    public List<List<Route>?>? GetAllRoutesPages(ITransportParser<List<Route>, HtmlDocument>? parser = null)
     {
         parser = parser ?? new HtmlRouteParser();
         
@@ -75,8 +75,7 @@ public class WebScraper : IDataProvider<HtmlDocument>
                     .ContinueWith(task => task.Result == null ? null : parser.Parse(task.Result))
             );
 
-        return tasks.Where(task => task.Result != null)
-            .SelectMany(task => task.Result!).ToList();
+        return tasks.Select(task => task.Result).ToList();
     }
 
     public List<Stop>? GetStops(int routeId, DateOnly? date = null, ITransportParser<List<Stop>, HtmlDocument>? parser = null)

@@ -1,12 +1,10 @@
-﻿using DataSearcher.API.Managers;
-using DataSearcher.Data.Context;
+﻿using DataSearcher.Data.Context;
 using DataSearcher.Data.Model;
 using DataSearcher.Domain.Helpers.Data;
 using DataSearcher.Domain.Helpers.Data.Providers;
 using DataSearcher.Domain.Services;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
 using Route = DataSearcher.Data.Model.Route;
 
 namespace DataSearcher.API.Controllers;
@@ -15,14 +13,9 @@ namespace DataSearcher.API.Controllers;
 [Route("api/[controller]")]
 public class TransportController : ControllerBase
 {
-    private readonly TransportRouteContext _context;
-    private readonly CacheManager _cacheManager;
-    private readonly TransportService<HtmlDocument> _service = new(new WebScraper());
-
-    public TransportController(TransportRouteContext context, CacheManager cache)
+    public TransportController()
     {
-        _context = context;
-        _cacheManager = cache;
+        
     }
 
     [HttpGet("getRouteById")]
@@ -57,7 +50,6 @@ public class TransportController : ControllerBase
 
             return dbResult;
         }
-        
         return cachedResult.Select(r => r?.Data.First()).ToList();
     }
 
@@ -88,7 +80,7 @@ public class TransportController : ControllerBase
             await _context.SaveChangesAsync();
         }
         return _context.RouteStopBindings
-            .Where(binding => binding.RouteId == routeId).ToList()
+            .Where(binding => binding.RouteId == routeId)
             .Select(binding => _context.Stops.First(stop => stop.Id == binding.StopId)).ToList();
     }
 

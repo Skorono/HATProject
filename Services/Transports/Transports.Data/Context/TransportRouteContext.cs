@@ -1,7 +1,7 @@
-﻿using DataSearcher.Data.Model;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Transports.Data.Model;
 
-namespace DataSearcher.Data.Context;
+namespace Transports.Data.Context;
 
 public class TransportRouteContext : DbContext
 {

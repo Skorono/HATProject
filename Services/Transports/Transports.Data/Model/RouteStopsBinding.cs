@@ -1,9 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using DataSearcher.Data.Interfaces;
 
-namespace DataSearcher.Data.Model;
+namespace Transports.Data.Model;
 
-public class RouteStopsBinding: IModel
+public class RouteStopsBinding
 {
     [Key]
     public int BindingId { get; set; }

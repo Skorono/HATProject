@@ -1,8 +1,6 @@
-using DataSearcher.Data.Interfaces;
+namespace Transports.Data.Model;
 
-namespace DataSearcher.Data.Model;
-
-public class Schedule: IModel
+public class Schedule
 {
     public int BindingId { get; set;  }
     public DateTime ArriveDateTime { get; set; }

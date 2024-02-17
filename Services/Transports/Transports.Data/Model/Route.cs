@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Metadata;
-using IModel = DataSearcher.Data.Interfaces.IModel;
 
-namespace DataSearcher.Data.Model;
+namespace Transports.Data.Model;
 
-public class Route: IModel
+public class Route
 {
     [Column(TypeName = "VARCHAR")]
     [StringLength(4)]

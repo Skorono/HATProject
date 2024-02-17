@@ -5,7 +5,7 @@ namespace DataSearcher.Domain.Helpers.Data.Providers;
 
 public interface IDataProvider<TInput>
 {
-    public List<Route>? GetRoutes(ITransportParser<List<Route>, TInput>? parser = null);
+    public List<List<Route>?>? GetAllRoutesPages(ITransportParser<List<Route>, TInput>? parser = null);
 
     public List<Stop>? GetStops(int routeId, DateOnly? date = null, 
         ITransportParser<List<Stop>, TInput>? parser = null);
