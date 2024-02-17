@@ -1,13 +1,28 @@
 services:
+  rabbit:
+    hostname: rabbit
+    image: rabbitmq:latest
+    ports:
+      - "5672:5672"
+  
   datasearcher:
     build:
       context: .
       dockerfile: Services/DataSearcher/DataSearcher.API/Dockerfile
     ports:
-      - "8080:80"  
+      - "7001:7001"  
     depends_on: 
+      - redis
+  
+  transports:
+    build:
+      context: : .
+      dockerfile: Services/Transports/Transports.API/Dockerfile
+    ports:
+      - "7002:7002"
+    depends_on:
       - db
-      
+  
   db:
     image:
       postgres:latest
