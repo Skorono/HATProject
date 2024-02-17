@@ -1,12 +1,12 @@
 using System.Net;
-using DataSearcher.Data.Model;
 using DataSearcher.Domain.Helpers.Data.Parsers;
 using DataSearcher.Domain.Helpers.Data.Parsers.Html;
+using HATProject.Infrastructure.Models.Transports;
 using HtmlAgilityPack;
 
-namespace DataSearcher.Domain.Helpers.Data.Providers;
+namespace DataSearcher.Domain.Services;
 
-public class WebScraper : IDataProvider<HtmlDocument>
+public class WebScraperService : IDataProvider<HtmlDocument>
 {
     public static readonly string BaseUrl = "https://transport.mos.ru/";
 
@@ -16,10 +16,69 @@ public class WebScraper : IDataProvider<HtmlDocument>
 
     private readonly HttpClient _client = new() { BaseAddress = new Uri(BaseUrl) };
 
-    public WebScraper()
+    public WebScraperService()
     {
         _client.Timeout = TimeSpan.FromMinutes(30);
     }
+
+    public List<List<RouteDTO>?>? GetAllRoutesPages(ITransportParser<List<RouteDTO>, HtmlDocument>? parser = null)
+    {
+        parser = parser ?? new HtmlRouteParser();
+
+        var page = 1;
+        List<Task<List<RouteDTO>?>> tasks = new();
+        while (tasks.Count <= 0 || (tasks.Last().Result != null && tasks.Last().Status == TaskStatus.RanToCompletion))
+            tasks.Add(
+                Task
+                    .Run(() => GetRoutePage(page++))
+                    .ContinueWith(task => task.Result == null ? null : parser.Parse(task.Result))
+            );
+
+        return tasks.Select(task => task.Result).ToList();
+    }
+
+    public List<StopDTO>? GetStops(int routeId, DateOnly? date = null,
+        ITransportParser<List<StopDTO>, HtmlDocument>? parser = null)
+    {
+        parser = parser ?? new HtmlStopsParser();
+
+        date = date ?? DateOnly.Parse(DateTime.Today.ToShortDateString());
+
+        var schedulePage = _getHtmlDoc("ru/ajax/App/ScheduleController/getRoute?" +
+                                       "mgt_schedule[BisNight]=&" +
+                                       $"mgt_schedule[date]={date}&" +
+                                       $"mgt_schedule[route]={routeId}&" +
+                                       "mgt_schedule[direction]=0",
+            new Dictionary<string, string>
+            {
+                { "User-Agent", UserAgent },
+                { "X-Requested-With", "XMLHttpRequest" }
+            });
+
+        return schedulePage != null ? parser.Parse(schedulePage) : null;
+    }
+
+    public List<ScheduleDTO>? GetSchedule(int routeId, DateOnly? date = null,
+        ITransportParser<List<ScheduleDTO>?, HtmlDocument>? parser = null)
+    {
+        parser = parser ?? new HtmlScheduleParser()!;
+
+        date = date ?? DateOnly.Parse(DateTime.Today.ToShortDateString());
+
+        var schedulePage = _getHtmlDoc("ru/ajax/App/ScheduleController/getRoute?" +
+                                       "mgt_schedule[BisNight]=&" +
+                                       $"mgt_schedule[date]={date}&" +
+                                       $"mgt_schedule[route]={routeId}&" +
+                                       "mgt_schedule[direction]=0",
+            new Dictionary<string, string>
+            {
+                { "User-Agent", UserAgent },
+                { "X-Requested-With", "XMLHttpRequest" }
+            });
+
+        return schedulePage != null ? parser.Parse(schedulePage) : null;
+    }
+
     public HtmlDocument? GetRoutePage(int page)
     {
         var responseUrl = $"ru/ajax/App/ScheduleController/getRoutesList?" +
@@ -60,62 +119,5 @@ public class WebScraper : IDataProvider<HtmlDocument>
         }
 
         return doc.ParsedText != null ? doc : null;
-    }
-
-    public List<List<Route>?>? GetAllRoutesPages(ITransportParser<List<Route>, HtmlDocument>? parser = null)
-    {
-        parser = parser ?? new HtmlRouteParser();
-        
-        var page = 1;
-        List<Task<List<Route>?>> tasks = new();
-        while (tasks.Count <= 0 || (tasks.Last().Result != null && tasks.Last().Status == TaskStatus.RanToCompletion))
-            tasks.Add(
-                Task
-                    .Run(() => GetRoutePage(page++))
-                    .ContinueWith(task => task.Result == null ? null : parser.Parse(task.Result))
-            );
-
-        return tasks.Select(task => task.Result).ToList();
-    }
-
-    public List<Stop>? GetStops(int routeId, DateOnly? date = null, ITransportParser<List<Stop>, HtmlDocument>? parser = null)
-    {
-        parser = parser ?? new HtmlStopsParser();
-        
-        date = date ?? DateOnly.Parse(DateTime.Today.ToShortDateString());
-
-        var schedulePage = _getHtmlDoc("ru/ajax/App/ScheduleController/getRoute?" +
-                                       "mgt_schedule[BisNight]=&" +
-                                       $"mgt_schedule[date]={date}&" +
-                                       $"mgt_schedule[route]={routeId}&" +
-                                       "mgt_schedule[direction]=0",
-            new Dictionary<string, string>
-            {
-                { "User-Agent", UserAgent },
-                { "X-Requested-With", "XMLHttpRequest" }
-            });
-
-        return schedulePage != null ? parser.Parse(schedulePage) : null;
-    }
-
-    public List<Schedule>? GetSchedule(int routeId, DateOnly? date = null, 
-        ITransportParser<List<Schedule>?, HtmlDocument>? parser = null)
-    {
-        parser = parser ?? new HtmlScheduleParser()!;
-        
-        date = date ?? DateOnly.Parse(DateTime.Today.ToShortDateString());
-
-        var schedulePage = _getHtmlDoc("ru/ajax/App/ScheduleController/getRoute?" +
-                                       "mgt_schedule[BisNight]=&" +
-                                       $"mgt_schedule[date]={date}&" +
-                                       $"mgt_schedule[route]={routeId}&" +
-                                       "mgt_schedule[direction]=0",
-            new Dictionary<string, string>
-            {
-                { "User-Agent", UserAgent },
-                { "X-Requested-With", "XMLHttpRequest" }
-            });
-
-        return schedulePage != null ? parser.Parse(schedulePage) : null;
     }
 }

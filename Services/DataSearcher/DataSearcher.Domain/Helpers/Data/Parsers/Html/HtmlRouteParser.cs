@@ -1,42 +1,43 @@
-using DataSearcher.Data.Model;
+using HATProject.Infrastructure.Models.Transports;
 using HtmlAgilityPack;
 
 namespace DataSearcher.Domain.Helpers.Data.Parsers.Html;
 
-public class HtmlRouteParser: ITransportParser<List<Route>, HtmlDocument>
+public class HtmlRouteParser : ITransportParser<List<RouteDTO>, HtmlDocument>
 {
-    public List<Route> Parse(HtmlDocument data)
+    public List<RouteDTO> Parse(HtmlDocument data)
     {
         return data.DocumentNode?
             .SelectNodes("//a[@class=\"ts-row \"]")
             .Select(
-                node => new Func<Route>(delegate
+                node => new Func<RouteDTO>(delegate
                 {
                     var name = node.ChildNodes
                         .First(node => node.Attributes.FirstOrDefault(attr => attr.Value == "ts-number") != null)
                         .InnerText
                         .Trim();
 
-                    return new Route
+                    return new RouteDTO
                     {
                         Id = int.Parse(node.Attributes["href"].Value.Split('/').Last()),
                         Name = name,
-                        RouteTypeId = (int)_getRouteType(name),
-                        TransportTypeId =
-                            (int)_getTransportType(node.SelectSingleNode(".//i[@class]").Attributes["class"].Value.Trim())
+                        RouteType = _getRouteType(name),
+                        TransportType =
+                            node.SelectSingleNode(".//i[@class]").Attributes["class"].Value
+                                .Trim().Split('-').LastOrDefault()!
                     };
                 }).Invoke()
-            ).ToList();        
+            ).ToList();
     }
 
-    private RouteType.Types _getRouteType(string routeName)
+    private string _getRouteType(string routeName)
     {
-        return RouteType.Types.Local;
+        return "";
     }
 
-    private TransportType.Types _getTransportType(string nameStr)
+    /*private TransportType.Types _getTransportType(string nameStr)
     {
-        switch (nameStr.Split('-').LastOrDefault())
+        switch (nameStr)
         {
             case "trolleybus":
                 return TransportType.Types.Trolleybus;
@@ -47,5 +48,5 @@ public class HtmlRouteParser: ITransportParser<List<Route>, HtmlDocument>
             default:
                 return TransportType.Types.Undefined;
         }
-    }
+    }*/
 }

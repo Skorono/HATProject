@@ -25,6 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\Transports\Transports.Data\Transports.Data.csproj" />
         <ProjectReference Include="..\DataSearcher.Data\DataSearcher.Data.csproj" />
         <ProjectReference Include="..\DataSearcher.Domain\DataSearcher.Domain.csproj" />
     </ItemGroup>

@@ -39,6 +39,6 @@ public class TransportRouteContext : DbContext
         modelBuilder.Entity<RouteStopsBinding>().HasAlternateKey(r => new { r.RouteId, r.StopId });
         modelBuilder.Entity<Schedule>().HasKey(s => new { s.BindingId, s.ArriveDateTime });
 
-    base.OnModelCreating(modelBuilder);
+        base.OnModelCreating(modelBuilder);
     }
 }

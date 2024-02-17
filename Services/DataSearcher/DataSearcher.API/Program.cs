@@ -1,8 +1,9 @@
-using DataSearcher.Data.Context;
-using DataSearcher.Domain.Helpers.Data.Providers;
+using System.Text.Json.Serialization;
+using DataSearcher.API.BackgroundServices;
+using DataSearcher.Api.Managers;
 using DataSearcher.Domain.Services;
 using HtmlAgilityPack;
-using Microsoft.EntityFrameworkCore;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,17 +19,23 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.InstanceName = "local";
 });
 
-builder.Services.AddDbContext<TransportRouteContext>(
-    option => 
-        option.UseNpgsql(builder.Configuration
-            .GetConnectionString("DefaultConnection"))
+builder.Services.AddMassTransit(x =>
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(new Uri("rabbitmq://host.docker.internal/"));
+        /*cfg.ConfigureJsonSerializerOptions(settings =>
+        {
+            settings.PreferredObjectCreationHandling = 
+        });*/
+    })
 );
 
 builder.Services.AddSingleton<CacheManager>();
-builder.Services.AddScoped<IDataProvider<HtmlDocument>, WebScraper>();
+builder.Services.AddScoped<IDataProvider<HtmlDocument>, WebScraperService>();
+
+builder.Services.AddHostedService<MosTransScraperTimedHostedService>();
 
 var app = builder.Build();
-
 
 if (app.Environment.IsDevelopment())
 {

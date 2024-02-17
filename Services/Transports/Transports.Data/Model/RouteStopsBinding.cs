@@ -4,8 +4,8 @@ namespace Transports.Data.Model;
 
 public class RouteStopsBinding
 {
-    [Key]
-    public int BindingId { get; set; }
+    [Key] public int BindingId { get; set; }
+
     public int RouteId { get; set; }
     public int StopId { get; set; }
 

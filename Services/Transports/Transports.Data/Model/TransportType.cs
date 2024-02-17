@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Transports.Data.Model;
 
@@ -13,8 +11,8 @@ public class TransportType
         Trolleybus,
         Undefined
     }
-    
-    [Key]
-    public int Id { get; set; }
+
+    [Key] public int Id { get; set; }
+
     public string Name { get; set; } = null!;
 }

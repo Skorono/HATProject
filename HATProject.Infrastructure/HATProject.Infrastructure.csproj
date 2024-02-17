@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="MassTransit\Transports\Requests\" />
-      <Folder Include="MassTransit\Transports\Responses\" />
+        <Folder Include="MassTransit\Transports\Requests\"/>
+        <Folder Include="MassTransit\Transports\Responses\"/>
     </ItemGroup>
 
 </Project>

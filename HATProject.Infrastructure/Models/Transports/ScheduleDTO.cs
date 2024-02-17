@@ -1,8 +1,8 @@
 ﻿namespace HATProject.Infrastructure.Models.Transports;
 
-public class Schedule
+public class ScheduleDTO
 {
-    public RouteDTO Route { get; set; }
-    public StopDTO Stop { get; set; }
+    public int RouteId { get; set; }
+    public int StopId { get; set; }
     public DateTime ArriveDateTime { get; set; }
 }

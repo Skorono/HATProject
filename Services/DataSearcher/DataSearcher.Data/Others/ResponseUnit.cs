@@ -1,13 +1,12 @@
-namespace DataSearcher.Domain.Helpers.Data;
+namespace DataSearcher.Data.Others;
 
 [Serializable]
 public class ResponseUnit<T>
 {
-    private DateTime _responseDateTime = DateTime.Now;
     public List<T> Data { get; set; }
 
-    public DateTime ResponseDateTime => _responseDateTime;
+    public DateTime ResponseDateTime { get; } = DateTime.Now;
 
     public TimeSpan LifeTime { get; set; }
-    public bool IsOutdated => DateTime.Now.Second > (ResponseDateTime.Second + LifeTime.Seconds);
+    public bool IsOutdated => DateTime.Now.Second > ResponseDateTime.Second + LifeTime.Seconds;
 }
