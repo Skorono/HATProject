@@ -1,3 +1,6 @@
 from django.db import models
 
-# Create your models here.
+
+class Stop(models.Model):
+    id = models.IntegerField(auto_created=True, primary_key=True)
+    name = models.CharField(max_length=200)

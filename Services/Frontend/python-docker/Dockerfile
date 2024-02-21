@@ -39,7 +39,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     python -m pip install -r requirements.txt
 
 # Switch to the non-privileged user to run the application.
-USER appuser
+#USER appuser
 
 # Copy the source code into the container.
 COPY . .
@@ -49,4 +49,6 @@ EXPOSE 8000
 
 # Run the application.
 CMD  cd /app/src/scripts && \
+     python manage.py makemigrations transportMap && \
+     python manage.py migrate && \
      python3 manage.py runserver 0:8000

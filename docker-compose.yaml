@@ -5,13 +5,17 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    networks:
+      - "default_network"
 
-  frontend:
-    build:
-      context: .
-      dockerfile: Services/Frontend/python-docker/Dockerfile
-    ports:
-      - "8000:8000"
+#frontend:
+#    build:
+#      context: .
+#      dockerfile: Services/Frontend/python-docker/Dockerfile
+#    ports:
+#      - "8000:8000"
+#    networks:
+#      - "default_network"
       
 #  datasearcher:
 #    build:
@@ -42,6 +46,8 @@ services:
       PGDATA: "/var/lib/postgresql/data/pgdata"
     ports:  
       - "5432:5432"
+    networks:
+      - "default_network"
         
   redis:
     image: redis:latest
@@ -50,3 +56,9 @@ services:
       - "6379:6379"
     environment:
       - REDIS_DATABASES=1
+    networks:
+      - "default_network"
+
+networks:
+  default_network:
+    name: "hat project_default"
