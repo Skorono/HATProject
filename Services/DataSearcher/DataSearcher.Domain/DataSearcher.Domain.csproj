@@ -15,8 +15,4 @@
         <ProjectReference Include="..\DataSearcher.Data\DataSearcher.Data.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Helpers\Data\Providers\" />
-    </ItemGroup>
-
 </Project>

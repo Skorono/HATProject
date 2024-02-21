@@ -29,14 +29,13 @@ public class MosTransScraperTimedHostedService: IHostedService, IDisposable
         return Task.CompletedTask;
     }
 
-    //TODO insert here parser logic
-    private async void DoWork(object state) => throw new NotImplementedException();
+    private async void DoWork(object state) => _logger.LogInformation("i`m working");
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("MosTrans scraper is stopping");
         
-        _timer.Change(Timeout.Infinite, 0);
+        _timer?.Change(Timeout.Infinite, 0);
 
         return Task.CompletedTask;
     }

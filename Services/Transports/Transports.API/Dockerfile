@@ -5,10 +5,10 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["Services/Transports.API/Transports.API.csproj", "Services/Transports.API/"]
-RUN dotnet restore "Services/Transports.API/Transports.API.csproj"
+COPY ["Services/Transports/Transports.API/Transports.API.csproj", "Services/Transports/Transports.API/"]
+RUN dotnet restore "Services/Transports/Transports.API/Transports.API.csproj"
 COPY . .
-WORKDIR "/src/Services/Transports.API"
+WORKDIR "/src/Services/Transports/Transports.API"
 RUN dotnet build "Transports.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
